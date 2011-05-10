@@ -1,0 +1,1004 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pl" lang="pl">
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <title>Ustawienia tagów</title>
+	<link href="styl.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="all">
+<h1>Ustawienia tagów bb</h1>
+Tagi przechowujemy we właściwości $tags (array) filtra. Klucz owej tablicy jest nazwą taga.
+Lista opcji:
+<ul>
+	<li><a href="#open">open</a></li>
+	<li><a href="#close">close</a></li>
+	<li><a href="#allowed_child">allowed_child</a></li>
+	<li><a href="#notallowed_child">notallowed_child</a></li>
+	<li><a href="#leave_notallowed_child">leave_notallowed_child</a></li>
+	<li><a href="#allowed_parent">allowed_parent</a></li>
+	<li><a href="#notallowed_parent">notallowed_parent</a></li>
+	<li><a href="#leave_notallowed_parent">leave_notallowed_parent</a></li>
+	<li><a href="#parse_body">parse_body</a></li>
+	<li><a href="#parse_no_body">parse_no_body</a></li>
+	<li><a href="#attributes">attributes</a></li>
+</ul>
+
+<h2><a name="open">open</a></h2>
+<div class="subcontent">
+	Ciąg wstawiany na początku otwierającego taga html
+</div>
+<div class="example">
+	<div class="example_title">
+		(1) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'tag'=>array(
+			'open'	=>'open',
+			'close'	=>'close'
+		)
+	);
+
+	// uzycie
+	[tag]tekst[/tag]
+
+	// wynik
+	&lt;open&gt;tekst&lt;/close&gt;
+</pre>
+</div>
+<div class="example">
+	<div class="example_title">
+		(2) Przykład - można dostawić również atrybuty, których wartości nie
+		będziemy zmieniać np przez funkcje parsujące
+	</div>
+<pre>
+	public $tags = array(
+		'tag'=>array(
+			'open'	=>'open style="underline"',
+			'close'	=>'close'
+		)
+	);
+
+	// uzycie
+	[tag]tekst[/tag]
+
+	// wynik
+	&lt;open style="underline"&gt;tekst&lt;/close&gt;
+</pre>
+</div>
+
+<h2><a name="close">close</a></h2>
+<div class="subcontent">
+	Ciąg wstawiany na początku zamykającego taga html.
+	Opcja może mieć wartość <i>false</i> oznaczającą iż tag zamyka się sam w sobie
+</div>
+<div class="example">
+	<div class="example_title">
+		(3) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'tag'=>array(
+			'open'	=>'open',
+			'close'	=>'close'
+		)
+	);
+
+	// uzycie
+	[tag]tekst[/tag]
+
+	// wynik
+	&lt;open&gt;tekst&lt;/close&gt;
+</pre>
+</div>
+<div class="example">
+	<div class="example_title">
+		(4) Przykład - samozamykanie
+	</div>
+<pre>
+	public $tags = array(
+		'tag'=>array(
+			'open'	=>'open',
+			'close'	=>false
+		)
+	);
+
+	// uzycie
+	[tag]
+
+	// wynik
+	&lt;open /&gt;
+</pre>
+</div>
+
+<h2><a name="allowed_child">allowed_child</a></h2>
+<div class="subcontent">
+	Lista akceptowanych dzieci elementu. Sprawdzanie nie działa rekurencyjnie.
+	Wartość musi być tablicą z nazwami dzieci albo wartością "none" (nie akceptuj wszystkich)
+</div>
+	<div class="example">
+	<div class="example_title">
+		(5) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'u'=>array(
+			'open'	=>'open_u',
+			'close'	=>'close_u',
+			'allowed_child' => array('b')
+		),
+		'b'=>array(
+			'open'	=>'open_b',
+			'close'	=>'close_b'
+		),
+		'c'=>array(
+			'open'	=>'open_c',
+			'close'	=>'close_c'
+		}
+	);
+
+	// uzycie
+	[u]tekst [c]testowy[/c][/u]
+	[u]tekst [b]pogrubiony[/b][/u]
+
+	// wynik
+	&lt;open_u&gt;tekst testowy&lt;/close_u&gt;
+	&lt;open_u&gt;tekst &lt;open_b&gt;pogrubiony&lt;/close_b&gt;&lt;/close_u&gt;
+</pre>
+</div>
+<div class="example">
+	<div class="example_title">
+		(6) Przykład  - sprawdzenie nie jest rekurencyjne
+	</div>
+<pre>
+	public $tags = array(
+		'u'=>array(
+			'open'	=>'open_u',
+			'close'	=>'close_u',
+			'allowed_child' => array('b')
+		),
+		'b'=>array(
+			'open'	=>'open_b',
+			'close'	=>'close_b',
+			'allowed_child' => array('c')
+		),
+		'c'=>array(
+			'open'	=>'open_c',
+			'close' =>'close_c'
+		)
+	);
+
+	// uzycie
+	[u][c]tekst[/c] [b]pogrubiony[/b][/u]
+	[u]tekst [b][c]pogrubiony[/c][/b][/u]
+
+	// wynik
+	&lt;open_u&gt;tekst &lt;open_b&gt;pogrubiony&lt;/close_b&gt;&lt;/close_u&gt;
+	&lt;open_u&gt;tekst &lt;open_b&gt;&lt;open_c>pogrubiony&lt;/close_c&gt;&lt;/close_b&gt;&lt;/close_u&gt;
+</pre>
+</div>
+
+
+<h2><a name="notallowed_child">notallowed_child</a></h2>
+<div class="subcontent">
+	Lista nie akceptowanych dzieci elementu. Sprawdzanie nie działa rekurencyjnie.
+	Wartość musi być tablicą z nazwami dzieci albo wartością "all" (nie akceptuj wszystkich)
+</div>
+<div class="example">
+	<div class="example_title">
+		(7) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'u'=>array(
+			'open'	=>'open_u',
+			'close'	=>'close_u',
+			'notallowed_child' => array('b', 'u')
+		),
+		'b'=>array(
+			'open'	=>'open_b',
+			'close'	=>'close_b'
+		),
+		'c'=>array(
+			'open'	=>'open_c',
+			'close'	=>'close_c'
+		)
+	);
+
+	// uzycie
+	[u]tekst [c]testowy[/c][/u]
+	[u]tekst [b]pogrubiony[/b][/u]
+	[u]tekst [u]testowy[/u][/u]
+
+	// wynik
+	&lt;open_u&gt;tekst &lt;open_c&gt;testowy&lt;close_u&gt;&lt;close_u&gt;
+	&lt;open_u&gt;tekst pogrubiony&lt;close_u&gt;
+	&lt;open_u&gt;tekst testowy&lt;close_u&gt;
+</pre>
+</div>
+
+
+<h2><a name="leave_notallowed_child">leave_notallowed_child</a></h2>
+<div class="subcontent">
+	Czy zostawiać kod bb niedozwolonych dzieci. Domyślnie tag,
+	który jest niedozwolonym dzieckiem jest usuwany (BbCode::$removeInvalidTags),
+	ta opcje pozwala ominąć powyższe ustawienie.
+</div>
+<div class="example">
+	<div class="example_title">
+		(8) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'u'=>array(
+			'open'	=>'open_u',
+			'close'	=>'close_u',
+			'notallowed_child' => array('b', 'u')
+			'leave_notallowed_child' => true
+		),
+		'b'=>array(
+			'open'	=>'open_b',
+			'close'	=>'close_b'
+		)
+	);
+
+	// uzycie
+	[u]tekst [b]pogrubiony[/b][/u]
+	[u]tekst [u]testowy[/u][/u]
+
+	// wynik
+	&lt;open_u&gt;tekst [b]pogrubiony[/b]&lt;close_u&gt;
+	&lt;open_u&gt;tekst [u]testowy[/u]&lt;close_u&gt;
+</pre>
+</div>
+
+
+
+<h2><a name="allowed_parent">allowed_parent</a></h2>
+<div class="subcontent">
+	Lista akceptowanych rodziców elementu. Sprawdzanie nie działa rekurencyjnie.
+	Wartość musi być tablicą z nazwami rodzicow albo wartością "none" (nie moze miec rodzica)
+</div>
+	<div class="example">
+	<div class="example_title">
+		(9) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'u'=>array(
+			'open'	=>'open_u',
+			'close'	=>'close_u',
+			'allowed_parent' => array('b')
+		),
+		'b'=>array(
+			'open'	=>'open_b',
+			'close'	=>'close_b'
+		)
+	);
+
+	// uzycie
+	[u]tekst testowy[/u]
+	[b]tekst [u]testowy[/u][/b]
+
+	// wynik
+	tekst testowy
+	&lt;open_b&gt;tekst &lt;open_u&gt;testowy&lt;close_u&gt;&lt;close_g&gt;
+</pre>
+</div>
+
+
+
+<h2><a name="notallowed_parent">notallowed_parent</a></h2>
+<div class="subcontent">
+	Lista nie akceptowanych rodziców elementu. Sprawdzanie nie działa rekurencyjnie.
+	Wartość musi być tablicą z nazwami rodzicow albo wartością "all" (nie moze miec rodzica)
+</div>
+	<div class="example">
+	<div class="example_title">
+		(10) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'u'=>array(
+			'open'	=>'open_u',
+			'close'	=>'close_u',
+			'notallowed_parent' => array('b')
+		),
+		'b'=>array(
+			'open'	=>'open_b',
+			'close'	=>'close_b'
+		)
+	);
+
+	// uzycie
+	[u]tekst testowy[/u]
+	[b]tekst [u]testowy[/u][/b]
+
+	// wynik
+	&lt;open_u&gt;tekst testowy&lt;close_u&gt;
+	&lt;open_b&gt;tekst testowy&lt;close_b&gt;
+</pre>
+</div>
+
+
+<h2><a name="leave_notallowed_parent">leave_notallowed_parent</a></h2>
+<div class="subcontent">
+	Czy zostawiać kod bb dzieci, które znajdują się w niedozwolonym rodzicu. Domyślnie
+	taki tag, jest usuwany (BbCode::$removeInvalidTags),
+	ta opcje pozwala ominąć powyższe ustawienie.
+</div>
+<div class="example">
+	<div class="example_title">
+		(11) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'u'=>array(
+			'open'	=>'open_u',
+			'close'	=>'close_u',
+			'notallowed_parent' => array('b', 'u')
+			'leave_notallowed_parent' => true
+		),
+		'b'=>array(
+			'open'	=>'open_b',
+			'close'	=>'close_b'
+		}
+	);
+
+	// uzycie
+	[u]tekst [b]pogrubiony[/b][/u]
+	[u]tekst [u]testowy[/u][/u]
+
+	// wynik
+	&lt;open_u&gt;tekst pogrubiony&lt;close_u&gt;
+	&lt;open_u&gt;tekst [u]testowy[/u]&lt;close_u&gt;
+</pre>
+</div>
+
+
+<h2><a name="parse_body">parse_body</a></h2>
+<div class="subcontent">
+	Nazwa dodatkowej metody analizującej elementy
+	(pomiędzy tagiem otwierającym, tag otwierający, tag zamykający)
+	Funkcja taka otrzymuje następujące parametry:
+	<ul>
+		<li>$tag <i>array</i> - wszystkie informacje na temat taga (z tablicy $tags)</li>
+		<li>$openNode <i>array</i> - tag otwierajacy</li>
+		<li>$body <i>array</i> - tablica elementów będących pomiedzy tagiem otwierającym i zamykającym</li>
+		<li>$closeNode <i>array</i> - tab zamykający</li>
+		<li>$settings <i>BbCodeSettings</i> - aktualne ustawienia parsera</li>
+	</ul>
+</div>
+<div class="example">
+	<div class="example_title">
+		(12) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'u'=>array(
+			'open'	=>'open_u',
+			'close'	=>'close_u',
+			'parse_body' => 'parse',
+		),
+		'b'=>array(
+			'open'	=>'open_b',
+			'close'	=>'close_b'
+		)
+	);
+
+	public function parse($tag, $openNode, $body, $closeNode, $settings)
+	{
+		foreach($body as &$el)
+		{
+			// zamienia tylko elementy tekstowe
+			if($el['type'] == BbCode::NODE_TYPE_TEXT)
+			{
+				$el['text']='test';
+			}
+			else $el['text'] = '[tag_bb]';
+		}
+	}
+
+	// uzycie
+	[u]tekst testowy[/u]
+	[u]tekst [b]testowy[/b][/u]
+
+	// wynik
+	&lt;open_u&gt;test&lt;close_u&gt;
+	&lt;open_u&gt;test[tab_bb]test[tag_bb]&lt;close_u&gt;
+</pre>
+</div>
+
+
+<h2><a name="parse_no_body">parse_no_body</a></h2>
+<div class="subcontent">
+	Nazwa dodatkowej metody parsującej elementy tekstowe poza elementami zawartymi
+pomiędzy tagiem otwierającym a zamykającym.
+	Funkcja taka otrzymuje następujące parametry:
+	<ul>
+		<li>$text <i>string</i> - tekst elementu</li>
+		<li>$parent <i>array|bool</i> - tablica informacji na temat taga,
+			który jest rodzicem elementu tekstowego, false w przypadku jego braku</li>
+		<li>$settings <i>BbCodeSettings</i> - aktualne ustawienia parsera</li>
+	</ul>
+</div>
+<div class="example">
+	<div class="example_title">
+		(13) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'u'=>array(
+			'open'	=>'open_u',
+			'close'	=>'close_u',
+			'parse_no_body' => 'parse',
+		),
+		'b'=>array(
+			'open'	=>'open_b',
+			'close'	=>'close_b'
+		)
+	);
+
+	public function parse($text, $parent, $settings)
+	{
+		$text = 'test';
+	}
+
+	// uzycie
+	[u]tekst testowy[/u] tekst
+	[b]tekst testowy[u]tekst testowy[/u]tekst testowy[/b]
+
+	// wynik
+	&lt;open_u&gt;tekst testowy&lt;close_u&gt;test
+	&lt;open_b&gt;test&lt;open_u&gt;tekst testowy&lt;close_u&gt;test&lt;close_b&gt;
+</pre>
+</div>
+
+
+<h2><a name="attributes">attributes</a></h2>
+<div class="subcontent">
+	Tablica atrybutów. Klucz jest nazwą atrybutu taga bb.
+	W przypadku gdy atrybut posiada taką samę nazwę jak tag, wtedy bedzie zapisywany w ten sposób
+	[nazwa_taga="wartosc"]
+	Poniżej lista opcji dla atrybutu
+	<ul>
+		<li><a href="#attr">attr</a></li>
+		<li><a href="#type">type</a></li>
+		<li><a href="#name">name</a></li>
+		<li><a href="#required">required</a></li>
+		<li><a href="#default_value">default_value</a></li>
+		<li><a href="#default_mode">default_mode</a></li>
+		<li><a href="#no_tag_show">no_tag_show</a></li>
+		<li><a href="#no_changeable">no_changeable</a></li>
+		<li><a href="#hide_body_in_cut_text">hide_body_in_cut_text</a></li>
+	</ul>
+</div>
+
+<h3><a name="attr">attr</a></h3>
+<div class="subcontent">
+	Nazwa atrybutu html do którego wstawić wartość
+</div>
+<div class="example">
+	<div class="example_title">
+		(14) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'tag'=>array(
+			'open'	=>'open',
+			'close'	=>'close',
+			'attributes'=>array(
+				'atrybut'=>array(
+					'attr'	=> 'atrybut_html'
+				)
+				
+			)
+		)
+	);
+
+	// uzycie
+	[tag atrybut="hehe"]tekst[/tag]
+
+	// wynik
+	&lt;open atrybut_html="hehe"&gt;tekst&lt;/close&gt;
+</pre>
+</div>
+
+<h3><a name="type">type</a></h3>
+<div class="subcontent">
+	Typ danych atrybutu. Możliwe typy to
+	<ul>
+		<li><a href="#string">string</a></li>
+		<li><a href="#number">number</a></li>
+		<li><a href="#url">url</a></li>
+	</ul>
+</div>
+<div class="example">
+	<div class="example_title">
+		<a name="example1">(15) Przykład</a>
+	</div>
+<pre>
+	public $tags = array(
+		'tag'=>array(
+			'open'	=>'open',
+			'close'	=>'close',
+			'attributes'=>array(
+				'url'=>array(
+					'attr'	=> 'a1',
+					'type'	=> 'url'
+				),
+				'tag'=>array(
+					'attr'	=> 'a2',
+					'type'	=> 'string'
+				),
+				'number'=>array(
+					'attr'	=> 'a3',
+					'type'	=> 'number',
+					'dimensions'=>array(
+						'px'=>array(
+							'min_value'=>5,
+							'max_value'=>10
+						),
+						'pt'=>array(
+							'min_value'=>11,
+							'max_value'=>20
+						),
+						'py'=>array(
+							'round_places'=>0,
+							'absolute'	=>true,
+							'values'=>array(5,10,15)
+						)
+					),
+					'default_dimension'=>'px'
+				)
+
+			)
+		)
+	);
+
+	// uzycie
+	[tag url="asd"]tekst[/tag] // niepoprawny url
+	[tag url="http://wookieb.pl"]tekst[/tag]
+	[tag="kazda_wartosc"]tekst[/tag]
+	[tag number="7"]tekst[/tag]
+	[tag number="7pt"]tekst[/tag] // bledna wartosc dla pt
+	[tag number="15px"]tekst[/tag] // bledna wartosc dla px
+	[tab number="15pt"]tekst[/tag]
+	[tab number="-15.23py"]tekst[/tag]
+	[tab number="-14.21py"]tekst[/tag] // 14 nie jest jest w puli numerow
+
+	// wynik
+	&lt;open&gt;tekst&lt;/close&gt;
+	&lt;open a1="http://wookieb.pl"&gt;tekst&lt;/close&gt;
+	&lt;open a2="kazda_wartosc"&gt;tekst&lt;/close&gt;
+	&lt;open a3="7px"&gt;tekst&lt;/close&gt;
+	&lt;open&gt;tekst&lt;/close&gt;
+	&lt;open&gt;tekst&lt;/close&gt;
+	&lt;open a3="15pt"&gt;tekst&lt;/close&gt;
+	&lt;open a3="15py"&gt;tekst&lt;/close&gt;
+	&lt;open&gt;tekst&lt;/close&gt;
+
+</pre>
+</div>
+
+<h4><a name="string">string</a></h4>
+<div class="subcontent">
+	Typ "tekst" posiada następujące opcje, które zapisujemy w tej samej tablicy co typ.
+	<ul>
+		<li>values <i>opcjonalny</i> - tablica dopuszczalnych wartosci</li>
+		<li>replace <i>opcjonalny</i> - czy zamieniac wartosci podane w kluczach <i>values</i></li>
+	</ul>
+	Jeżeli żadna z powyższych opcji nie zostanie podana, oznacza to, że akceptujemy
+	każdy ciąg, który wprowadzi użytkownik. Dlatego dla bezpieczeństwa wartość ta
+	będzie poddana funkcji htmlspecialchars.
+</div>
+<div class="example">
+	<div class="example_title">
+		(16) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'tag'=>array(
+			'open'	=>'open',
+			'close'	=>'close',
+			'attributes'=>array(
+				'tag'=>array(
+					'attr'	=> 'attr',
+					'type'	=> 'string'
+				)
+			),
+		'tag1'=>array(
+			'open'	=>'open',
+			'close'	=>'close',
+			'attributes'=>array(
+				'tag'=>array(
+					'attr'	=> 'attr',
+					'type'	=> 'string',
+					'values'=> array(
+						'Tahoma', 'Verdana'
+					)
+				)
+			),
+		'tag2'=>array(
+			'open'	=>'open',
+			'close'	=>'close',
+			'attributes'=>array(
+				'tag'=>array(
+					'attr'	=> 'attr',
+					'type'	=> 'string',
+					'values'=> array(
+						'Arial'=>'Tahoma',
+						'Wookieb'
+					),
+					'replace'=>true
+				)
+			)s
+		)
+	);
+
+	// uzycie
+	[tag="asd"]tekst[/tag]
+
+	[tag2="Arial"]tekst[/tag] // wartosc nie jest w podanej puli
+	[tag2="Tahoma"]tekst[/tag]
+
+	[tag3="Arial"]tekst[/tag] // zamiana na Tahoma
+	[tag3="Test"]tekst[/tag] // wartosc nie jest w podanej puli
+	[tag3="Tahoma"]tekst[/tag]
+	[tag3="Wookieb"]tekst[/tag]
+
+	// wynik
+	&lt;open attr="asd"&gt;tekst&lt;/close&gt;
+
+	&lt;open&gt;tekst&lt;/close&gt;
+	&lt;open attr="Tahoma"&gt;tekst&lt;/close&gt;
+
+	&lt;open attr="Tahoma"&gt;tekst&lt;/close&gt;
+	&lt;open&gt;tekst&lt;/close&gt;
+	&lt;open attr="Tahoma"&gt;tekst&lt;/close&gt;
+	&lt;open attr="Wookieb"&gt;tekst&lt;/close&gt;
+</pre>
+</div>
+<h4><a name="number">number</a></h4>
+<div class="subcontent">
+	Typ "numer" posiada następujące opcje, które zapisujemy w tej samej tablicy co typ.
+	<ul>
+		<li>dimensions <i>opcjonalny</i> - tablica ustawień dla poszczegolnych jednostek.
+			Ustawienia jednostki - podane w kolejności interpretowania (każdy parametr jest opcjonalny)
+			<ul>
+				<li>round_places - zaokrągla do podanej liczby miejsc po przecinku</li>
+				<li>absolute - czy wyciągać wartość bezwzględną</li>
+				<li>values - tablica dopuszczalnych wartosci. Podanie tablica uniewazna 2 ponizsze parametry</li>
+				<li>min_value - minimalna wartosc</li>
+				<li>max_value - maksymalna wartosc</li>
+			</ul>
+		</li>
+		<li>default_dimension <i>opcjonalny</i> - nazwa domyslnej jednostki
+			(jezeli brak parametru, domyslna stanie sie pierwsza z brzegu jednostka)</li>
+	</ul>
+	<a href="#example1">Przykład</a>
+</div>
+<h4><a name="url">url</a></h4>
+<div class="subcontent">
+	Typ "url" nie posiada żadnych opcji. Wartość musi być po prostu adresem URL
+	<a href="#example1">Przykład</a>
+</div>
+
+<h3><a name="name">name</a></h3>
+<div class="subcontent">
+	Ciąg jakim poprzedzać wartość w atrybutach, mogących przyjmować więcej niż jeden parametr (np. style)
+</div>
+<div class="example">
+	<div class="example_title">
+		(17) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'tag'=>array(
+			'open'	=>'div',
+			'close'	=>'div',
+			'attributes'=>array(
+				'font'=>array(
+					'attr'	=> 'style',
+					'name'	=> 'font-family:'
+				),
+				'align'=>array(
+					'attr'	=> 'style',
+					'type'	=> 'string',
+					'name'	=> 'text-align:',
+					'values'=> array('left','right','center')
+				)
+
+			)
+		)
+	);
+
+	// uzycie
+	[tag font="Arial"]tekst[/tag]
+	[tag align="left"]tekst[/tag]
+	[tag font="Arial" align="center"]tekst[/tag]
+
+	// wynik
+	&lt;div style="font-family:Arial"&gt;tekst&lt;/div&gt;
+	&lt;div style="text-align:left"&gt;tekst&lt;/div&gt;
+	&lt;div style="font-family:Arial;text-align:center"&gt;tekst&lt;/div&gt;
+</pre>
+</div>
+
+<h3><a name="required">required</a></h3>
+<div class="subcontent">
+	Czy atrybut jest wymagany aby uznać tag za poprawny
+</div>
+<div class="example">
+	<div class="example_title">
+		(18) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'font'=>array(
+			'open'	=>'span',
+			'close'	=>'span',
+			'attributes'=>array(
+				'font'=>array(
+					'attr'	=> 'style',
+					'name'	=> 'font-family:',
+					'values'=> array('Arial', 'Tahoma'),
+					'required'=>true
+				)
+			)
+		)
+	);
+
+	// uzycie
+	[font]tekst[/tag]
+	[font="Test"]tekst[/tag]
+	[font="Arial"]tekst[/tag]
+
+	// wynik
+	tekst
+	tekst
+	&lt;span style="font-family:Arial"&gt;tekst&lt;/span&gt;
+</pre>
+</div>
+
+<h3><a name="default_value">default_value</a></h3>
+<div class="subcontent">
+	Domyślna wartość atrybutu. Nie podlega żadnej kontroli typu.
+	W przypadku, jeżeli nie będziemy mieli potrzeby modyfikować wartości atrybutu (np w funkcjach parsujących)
+	lepiej dopisać owy atrybut wraz z wartością w opcję "open"
+</div>
+<div class="example">
+	<div class="example_title">
+		(19) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'font'=>array(
+			'open'	=>'span',
+			'close'	=>'span',
+			'attributes'=>array(
+				'font'=>array(
+					'attr'	=> 'style',
+					'name'	=> 'font-family:',
+					'values'=> array('Arial', 'Tahoma'),
+					'default_value' => 'Verdana'
+				)
+			)
+		)
+	);
+
+	// uzycie
+	[font]tekst[/tag]
+	[font="Test"]tekst[/tag]
+	[font="Arial"]tekst[/tag]
+
+	// wynik
+	&lt;span style="font-family:Verdana"&gt;tekst&lt;/span&gt;
+	&lt;span style="font-family:Verdana"&gt;tekst&lt;/span&gt;
+	&lt;span style="font-family:Arial"&gt;tekst&lt;/span&gt;
+</pre>
+</div>
+
+<h3><a name="default_mode">default_mode</a></h3>
+<div class="subcontent">
+	Tryb wstawiania domyślnej wartości. Przyjmuje następujące wartości
+	<ul>
+		<li>no_enter - nie wprowadzono w ogole atrybutu</li>
+		<li>no_valid - atrybut nie jest poprawny</li>
+		<li>both (domyślnie)- nie podano atrybutu, bądź jest nieprawidłowy</li>
+	</ul>
+</div>
+<div class="example">
+	<div class="example_title">
+		(20) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'font'=>array(
+			'open'	=>'span',
+			'close'	=>'span',
+			'attributes'=>array(
+				'font'=>array(
+					'attr'	=> 'style',
+					'name'	=> 'font-family:',
+					'values'=> array('Arial', 'Tahoma'),
+					'default_value' => 'Verdana'
+				)
+			)
+		),
+		'font2'=>array(
+			'open'	=>'span',
+			'close'	=>'span',
+			'attributes'=>array(
+				'font2'=>array(
+					'attr'	=> 'style',
+					'name'	=> 'font-family:',
+					'values'=> array('Arial', 'Tahoma'),
+					'default_value' => 'Verdana',
+					'default_mode'	=> 'no_valid'
+				)
+			)
+		),
+		'font3'=>array(
+			'open'	=>'span',
+			'close'	=>'span',
+			'attributes'=>array(
+				'font3'=>array(
+					'attr'	=> 'style',
+					'name'	=> 'font-family:',
+					'values'=> array('Arial', 'Tahoma'),
+					'default_value' => 'Verdana',
+					'default_mode'	=> 'no_enter'
+				)
+			)
+		)
+	);
+
+	// uzycie
+	[font]tekst[/tag]
+	[font="Test"]tekst[/tag]
+	[font="Arial"]tekst[/tag]
+
+	[font2]tekst[/tag]
+	[font2="Test"]tekst[/tag]
+	[font2="Arial"]tekst[/tag]
+
+	[font3]tekst[/tag]
+	[font3="Test"]tekst[/tag]
+	[font3="Arial"]tekst[/tag]
+
+	// wynik
+	&lt;span style="font-family:Verdana"&gt;tekst&lt;/span&gt;
+	&lt;span style="font-family:Verdana"&gt;tekst&lt;/span&gt;
+	&lt;span style="font-family:Arial"&gt;tekst&lt;/span&gt;
+
+	&lt;span&gt;tekst&lt;/span&gt;
+	&lt;span style="font-family:Verdana"&gt;tekst&lt;/span&gt;
+	&lt;span style="font-family:Arial"&gt;tekst&lt;/span&gt;
+
+	&lt;span style="font-family:Verdana"&gt;tekst&lt;/span&gt;
+	&lt;span&gt;tekst&lt;/span&gt;
+	&lt;span style="font-family:Arial"&gt;tekst&lt;/span&gt;
+</pre>
+</div>
+
+<h3><a name="no_tag_show">no_tag_show</a></h3>
+<div class="subcontent">
+	Nie pokazywać atrybutu w wyjściowym tagu bbcode.
+	Każdy tag, poza wersją htmlową posiada również wersję bbcode, tą opcją decydujemy,
+	czy dany atrybut może być pokazywany w wersji bbcode. Opcja przydatna, gdy chcemy ukryć część
+	nieistotnych parametrów.
+</div>
+<div class="example">
+	<div class="example_title">
+		(21) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'font'=>array(
+			'open'	=>'span',
+			'close'	=>'span',
+			'attributes'=>array(
+				'size'=>array(
+					'attr'	=> 'style',
+					'name'	=> 'font-size:',
+					'values'=> array('10', '15'),
+					'no_tag_show' => true
+				)
+			)
+		)
+	);
+
+	// uzycie
+	[font size="10"]tekst[/tag]
+	[font size="1"]tekst[/tag]
+	[font]tekst[/tag]
+
+	// wynik
+	&lt;span style="font-size:10"&gt;tekst&lt;/span&gt;
+	&lt;span&gt;tekst&lt;/span&gt;
+
+	// wersja bbcode
+	[font]tekst[/font]
+	[font]tekst[/font]
+</pre>
+</div>
+
+<h3><a name="no_changeable">no_changeable</a></h3>
+<div class="subcontent">
+	Blokada możliwości zmiany przez użytkownika. Podobnie jak z wartością domyślną.
+	Jeżeli nie będziemy operować tą wartością można bez problemu umieścić atrybut w opcji "open"
+</div>
+<div class="example">
+	<div class="example_title">
+		(22) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'font'=>array(
+			'open'	=>'span',
+			'close'	=>'span',
+			'attributes'=>array(
+				'font'=>array(
+					'no_changeable'=>true
+					'attr'	=> 'style',
+					'name'	=> 'font-family:',
+					'default_value' => 'Verdana'
+				)
+			)
+		)
+	);
+
+	// uzycie
+	[font]tekst[/font]
+	[font="Test"]tekst[/font]
+	[font="Arial"]tekst[/font]
+
+	// wynik
+	&lt;span style="font-family:Verdana"&gt;tekst&lt;/span&gt;
+	&lt;span style="font-family:Verdana"&gt;tekst&lt;/span&gt;
+	&lt;span style="font-family:Verdana"&gt;tekst&lt;/span&gt;
+</pre>
+</div>
+
+
+<h3><a name="hide_body_in_cut_text">hide_body_in_cut_text</a></h3>
+<div class="subcontent">
+	Czy ukrywać zawartość taga przy tworzeniu skróconego tekstu. Zawartość nie zostanie brana pod uwagę przy wyliczaniu długości zajawki.
+</div>
+<div class="example">
+	<div class="example_title">
+		(23) Przykład
+	</div>
+<pre>
+	public $tags = array(
+		'font'=>array(
+			'open'	=>'span',
+			'close'	=>'span',
+			'hide_body_in_cut_text' => true
+		)
+	);
+
+	// uzycie
+	Tekst testowy [font]Tekst do ukrycia[/font] dalszy ciąg tekstu
+
+	// wynik
+	Tekst testowy  dalszy ciąg tekstu
+</pre>
+</div>
+
+</div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-4996808-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+</html>

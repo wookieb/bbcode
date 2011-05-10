@@ -1,0 +1,97 @@
+body
+{
+	text-align: center;
+	font-size: 12px;
+	font-family: Tahoma;
+	margin: 0px;
+	padding: 0px;
+	background-color: #DBDBDB;
+	color: #474747;
+}
+
+#all
+{
+	width: 800px;
+	margin: 20px auto;
+	text-align: left;
+	background-color: #ffffff;
+	padding: 20px;
+	border: 1px solid #C3C3C3;
+
+}
+fieldset
+{
+	border: 1px solid #474747;
+	margin: 10px 0px;
+	line-height: 16px;
+}
+legend
+{
+	font-weight: bold;
+}
+ul, ol
+{
+	margin: 0px;
+}
+h1, h2, h3, h4
+{
+	font-size: 19px;
+	color: #11377B;
+}
+h2
+{
+	font-size: 17px;
+}
+h2
+{
+	font-size: 15px;
+}
+h2
+{
+	font-size: 13px;
+}
+.pre
+{
+	white-space: pre;
+}
+.quote_wrapper, .code_wrapper
+{
+	margin: 10px;
+	border: 1px dotted #2F2F2F;
+}
+
+.quote_area, .code_area
+{
+	padding: 5px;
+}
+.code_area
+{
+	white-space: pre;
+}
+.example
+{
+	border: 1px solid #11377B;
+	background-color: #E7E7E7;
+	margin-bottom: 10px;
+}
+.example_title, .quote_title, .code_title
+{
+	background-color: #11377B;
+	color: #ffffff;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 5px;
+}
+.quote_title, .code_title
+{
+	font-size: 11px;
+}
+.subcontent
+{
+	padding: 5px;
+	font-size: 14px;
+	padding-left: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid;
+	margin-bottom: 10px;
+}
