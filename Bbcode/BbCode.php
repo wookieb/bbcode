@@ -1217,10 +1217,23 @@ class BbCode {
 				}
 				$text.=$node['text'];
 				if (mb_strlen($text, $this->settings->charset) >= $length) {
-					$node['text'] = mb_substr(
+					if (mb_substr($node['text'], $length, 1, $this->settings->charset) !== ' ') {
+						$spaceLastPos = mb_strrpos($node['text'], ' ', null, $this->settings->charset);
+						if ($spaceLastPos !== false) {
+							$node['text'] = mb_substr($node['text'], 0, $spaceLastPos, $this->settings->charset);
+						}
+						$node['text'] = mb_substr(
 									$node['text'], 0,
 									$length,
 									$this->settings->charset);
+					} else {
+						$node['text'] = mb_substr(
+									$node['text'], 0,
+									$length,
+									$this->settings->charset);
+					}
+					
+
 
 					$nodes[] = $node;
 					$saveNodes = $nodes;
@@ -1228,15 +1241,9 @@ class BbCode {
 					$nodes = array_reverse($nodes);
 					foreach ($nodes as $key => &$tmpNode) {
 						if ($tmpNode['type'] === self::NODE_TYPE_TEXT) {
-							$wyn = preg_match('/(.*)\W/', $node['text'], $matches);
-							if (!$wyn)
-								unset($nodes[$key]);
-							else {
-								$tmpNode['text'] = $matches[1];
-								if ($addText != false)
-									$tmpNode['text'].=$addText;
-								break;
-							}
+							if ($addText != false)
+								$tmpNode['text'].=$addText;
+							break;
 						}
 						else
 							unset($nodes[$key]);
