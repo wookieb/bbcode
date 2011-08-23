@@ -1216,25 +1216,18 @@ class BbCode {
 					}
 				}
 				$text.=$node['text'];
-				if (mb_strlen($text, $this->settings->charset) >= $length) {
+				$textLength = mb_strlen($text, $this->settings->charset);
+				if ($textLength >= $length) {
+					$nodeTextLength = mb_strlen($node['text'], $this->settings->charset);
+					$textLengthWithoutNodeText = $textLength - $nodeTextLength;
+					$node['text'] = mb_substr($node['text'], 0, $length - $textLengthWithoutNodeText, $this->settings->charset);
 					if (mb_substr($node['text'], $length, 1, $this->settings->charset) !== ' ') {
 						$spaceLastPos = mb_strrpos($node['text'], ' ', null, $this->settings->charset);
 						if ($spaceLastPos !== false) {
 							$node['text'] = mb_substr($node['text'], 0, $spaceLastPos, $this->settings->charset);
 						}
-						$node['text'] = mb_substr(
-									$node['text'], 0,
-									$length,
-									$this->settings->charset);
-					} else {
-						$node['text'] = mb_substr(
-									$node['text'], 0,
-									$length,
-									$this->settings->charset);
 					}
 					
-
-
 					$nodes[] = $node;
 					$saveNodes = $nodes;
 
