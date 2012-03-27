@@ -242,7 +242,7 @@ class BbCode {
 		require_once dirname(__FILE__).'/Filters/'.$filter.'.php';
 
 		if (!class_exists($className)) {
-			trigger_error($classname.' filter not exists', E_USER_NOTICE);
+			trigger_error($className.' filter not exists', E_USER_NOTICE);
 			return false;
 		}
 
@@ -814,7 +814,7 @@ class BbCode {
 				return -1;
 			elseif (isset($tagInfo['default_attributes'])) {
 				foreach ($tagInfo['default_attributes'] as $attrName) {
-					$attrOptions = $tabInfo['attributes'][$attrName];
+					$attrOptions = $tagInfo['attributes'][$attrName];
 					$this->_parseDefaultAttribute($attrName, $attrOptions, 'no_enter', $tagAttributes);
 				}
 				return $tagAttributes;

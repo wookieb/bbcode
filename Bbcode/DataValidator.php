@@ -67,7 +67,7 @@ class DataValidator {
 		}
 
 		//niepoprawny format
-		if (!preg_match('/([0-9]+(?:\.[0-9]+)?)\s*([a-z]*)/i', $text, $matches))
+		if (!preg_match('/([0-9]+(?:(?:\.|\,)[0-9]+)?)\s*([a-z]*)/i', $text, $matches))
 			return -1;
 
 		$number = (float)$matches[1];
@@ -85,11 +85,8 @@ class DataValidator {
 		self::$parseNumberDimension = $dimension;
 
 		// nie ma jednostki badz nie ustawien jednostki to wywala numer
-		if ($dimension == false
-
-			)return $number;
-		if (!isset($dimensions[$dimension]))
-			return $number;
+		if ($dimension === false) return $number;
+		if (!isset($dimensions[$dimension])) return $number;
 
 		$options = $dimensions[$dimension];
 		// zaokraglanie
@@ -99,7 +96,7 @@ class DataValidator {
 		}
 
 		// wartosc bezwzgledna
-		if (isset($options['absolute']) && $option['absolute']) {
+		if (isset($options['absolute']) && $options['absolute']) {
 			$number = abs($number);
 		}
 
@@ -116,12 +113,14 @@ class DataValidator {
 		if (isset($options['min_value']) && is_numeric($options['min_value'])) {
 			if ($number < $options['min_value']) {
 				trigger_error('Out of range (minimal)', E_USER_NOTICE); // wartosc za mala
+				return false;
 			}
 		}
 
 		if (isset($options['max_value']) && is_numeric($options['max_value'])) {
 			if ($number > $options['max_value']) {
 				trigger_error('Out of range (maximal)', E_USER_NOTICE); // wartosc za duza
+				return false;
 			}
 		}
 

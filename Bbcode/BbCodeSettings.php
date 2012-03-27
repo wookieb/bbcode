@@ -5,6 +5,11 @@
  * @package Parser
  * @author wookieb
  * @version 1.0
+ *
+ * @property-read $openChar
+ * @property-read $closeChar
+ * @property-read $openCharQuoted
+ * @property-read $closeCharQuoted
  */
 class BbCodeSettings {
 	/**
