@@ -839,7 +839,7 @@ class BbCode {
 				if (!isset($attr[$tagAttr]) || isset($tagAttributes[$tagAttr]))
 					continue;
 
-				$options = $attr[$attribute[1]];
+				$options = $attr[$tagAttr];
 
 				if (isset($options['no_changeable']) && $options['no_changeable'])
 					continue;
