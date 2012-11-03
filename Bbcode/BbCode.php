@@ -1299,7 +1299,6 @@ class BbCode {
 
 		$this->_buildNodesArray();
 
-
 		// nie walidujemy htmla skoro kod jest zaufany
 		if (!$this->settings->trustText) {
 			if ($this->settings->validHtml)

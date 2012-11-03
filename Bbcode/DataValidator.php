@@ -133,10 +133,8 @@ class DataValidator {
 	 * @return string|bool false w przypadku nieprawidlowego urla
 	 */
 	public static function checkUrl($text) {
-		if (!preg_match('/((?:https?|ftp):\/\/[\w\d:#@%\/;$()*~_?\+\-=\.&!\'\[\]@,]+)/i', $text))
-			return false;
-		$text = preg_replace('/(javascript:)/is', '', $text);
-		return htmlspecialchars($text);
+		if (filter_var($text, FILTER_VALIDATE_URL) === false) return false;
+		return preg_replace('/(javascript:)/is', '', $text);
 	}
 }
 

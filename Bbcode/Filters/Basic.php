@@ -94,7 +94,7 @@ class BbCodeFilterBasic {
 	 * @param array $closeNode
 	 * @param BbCodeSettings $settings
 	 */
-	public function parseQuote($tag, $openNode, $body, &$closeNode, $settings) {
+	public function parseQuote($tag, &$openNode, &$body, &$closeNode, $settings) {
 		$divText = '';
 		if (isset($openNode['attributes'])) {
 			if (isset($openNode['attributes']['tag_attributes']['quote'])) {
