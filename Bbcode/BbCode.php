@@ -652,7 +652,7 @@ class BbCode {
 
 		if (!is_array($tagInfo)) {
 			// to nie jest tag bbcode (prawdopodobnie zwykly tekst)
-			$node['text'] = ($tagInfo === false && $this->settings->removeNotAvailableTags) ? '' : $text;
+			$node['text'] = ($tagInfo == false && $this->settings->removeNotAvailableTags) ? '' : $text;
 			$node['type'] = self::NODE_TYPE_TEXT;
 			return $node;
 		}
