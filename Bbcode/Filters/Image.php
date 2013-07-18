@@ -94,7 +94,7 @@ class BbCodeFilterImage {
 
 		$bodyUrl = DataValidator::checkUrl($bodyStr);
 		if ($bodyUrl) {
-			$openNode['attributes']['tag_attributes']['img'] = $bodyUrl;
+			$src = $bodyUrl;
 		} else if ($bodyStr) {
 			$openNode['attributes']['tag_attributes']['alt'] = $bodyStr;
 		}
