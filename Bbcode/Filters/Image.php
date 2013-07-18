@@ -40,7 +40,7 @@ class BbCodeFilterImage {
 	public $socketTimeout = 5;
 	public $tags = array(
 		'img' => array(
-			'open' => 'img alt=""',
+			'open' => 'img',
 			'close' => 'img',
 			'notallowed_childs' => 'all',
 			'hide_body_in_cut_text' => true,
@@ -63,6 +63,10 @@ class BbCodeFilterImage {
 					'no_changeable' => 1,
 					'attr' => 'height',
 					'tag_no_show' => 1
+				),
+				'alt' => array(
+					'attr' => 'alt',
+					'default_value' => ''
 				)
 			)
 		)
@@ -79,18 +83,29 @@ class BbCodeFilterImage {
 	public function checkImg($tag, &$openNode, &$body, &$cNode, $settings) {
 		require_once dirname(__FILE__).'/../DataValidator.php';
 
+		$src = '';
+		if (isset($openNode['attributes']['tag_attributes']['img'])) {
+			$src = DataValidator::checkUrl($openNode['attributes']['tag_attributes']['img']);
+		}
+
 		$bodyStr = '';
 		foreach ($body as $el)
 			$bodyStr.=$el['text'];
-		$str = DataValidator::checkUrl($bodyStr);
 
-		if ($str == false) {
+		$bodyUrl = DataValidator::checkUrl($bodyStr);
+		if ($bodyUrl) {
+			$openNode['attributes']['tag_attributes']['img'] = $bodyUrl;
+		} else if ($bodyStr) {
+			$openNode['attributes']['tag_attributes']['alt'] = $bodyStr;
+		}
+
+		if ($src == false) {
 			$openNode = $settings->removeNode($openNode, $settings->removeInvalidTags);
 			$cNode = $settings->removeNode($cNode, $settings->removeInvalidTags);
 			return false;
 		}
 
-		$openNode['attributes']['tag_attributes']['src'] = $str;
+		$openNode['attributes']['tag_attributes']['src'] = $src;
 		unset($el);
 
 		if (isset($openNode['attributes']['tag_attributes']['img'])) {
